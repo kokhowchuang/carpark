@@ -20,7 +20,7 @@ function cron_service(io) {
     const now = new Date().toISOString();
 
     const result = await axios.get(
-      `https://api.data.gov.sg/v1/transport/carpark-availability?date_time=${now}`
+      `https://api.data.gov.sg/v1/transport/carpark-availability`
     );
 
     if (result.status === 200) {
@@ -95,7 +95,7 @@ function cron_service(io) {
         carparkUpdate.push({ ...carparkCategoryMap.get(item), name: item });
       });
 
-      console.log(carparkUpdate);
+      io.emit('updated', carparkUpdate);
     }
   });
 }
