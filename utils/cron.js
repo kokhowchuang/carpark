@@ -2,6 +2,19 @@ const cron = require('node-cron');
 const axios = require('axios');
 const Helper = require('./helper');
 
+const categoryList = ['small', 'medium', 'big', 'large'];
+const carparkCategoryMap = new Map();
+const carparkAvailableInfo = {
+  highest: {
+    carpark_number: [],
+    lots_available: 0,
+  },
+  lowest: {
+    carpark_number: [],
+    lots_available: 0,
+  },
+};
+
 function cron_service(io) {
   cron.schedule('*/1 * * * * *', async () => {
     const now = new Date().toISOString();
@@ -28,12 +41,63 @@ function cron_service(io) {
 
         const category = Helper.getCategory(lotsInfo.totalLots);
 
-        console.log(category);
+        if (!carparkCategoryMap.has(category)) {
+          carparkAvailableInfo.lowest.lots_available = lotsInfo.totalLots;
+          carparkCategoryMap.set(category, carparkAvailableInfo);
+        }
+
+        const comparator = { ...carparkCategoryMap.get(category) };
+        let maxCarparkNumber = comparator.highest.carpark_number;
+        let maxLotsAvailable = comparator.highest.lots_available;
+        let minCarparkNumber = comparator.lowest.carpark_number;
+        let minLotsAvailable = comparator.lowest.lots_available;
+
+        if (lotsInfo.lotsAvailable > maxLotsAvailable) {
+          maxLotsAvailable = lotsInfo.lotsAvailable;
+          maxCarparkNumber = [item.carpark_number];
+        }
+
+        if (lotsInfo.lotsAvailable === maxLotsAvailable) {
+          if (maxCarparkNumber.indexOf(item.carpark_number) === -1) {
+            maxCarparkNumber.push(item.carpark_number);
+          }
+        }
+
+        if (lotsInfo.lotsAvailable < minLotsAvailable) {
+          minLotsAvailable = lotsInfo.lotsAvailable;
+          minCarparkNumber = [item.carpark_number];
+        }
+
+        if (lotsInfo.lotsAvailable === minLotsAvailable) {
+          if (minCarparkNumber.indexOf(item.carpark_number) === -1) {
+            minCarparkNumber.push(item.carpark_number);
+          }
+        }
+
+        const param = {
+          ...comparator,
+          highest: {
+            lots_available: maxLotsAvailable,
+            carpark_number: maxCarparkNumber,
+          },
+          lowest: {
+            lots_available: minLotsAvailable,
+            carpark_number: minCarparkNumber,
+          },
+        };
+        carparkCategoryMap.set(category, param);
+        console.log(carparkCategoryMap.get(category));
       });
+
+      const carparkUpdate = [];
+
+      categoryList.map((item) => {
+        carparkUpdate.push({ ...carparkCategoryMap.get(item), name: item });
+      });
+
+      console.log(carparkUpdate);
     }
   });
 }
-
-function findMinMax() {}
 
 module.exports = cron_service;
