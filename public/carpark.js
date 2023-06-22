@@ -1,3 +1,5 @@
+const status = document.getElementById('status');
+
 // Socket server URL
 const socket = io.connect('http://localhost:3000');
 
@@ -5,5 +7,5 @@ const socket = io.connect('http://localhost:3000');
 socket.emit('subcribe');
 
 socket.on('subcribed', () => {
-  console.log(111);
+  status.innerHTML = 'Connected';
 });

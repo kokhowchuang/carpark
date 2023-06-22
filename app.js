@@ -28,4 +28,6 @@ const io = socket(server, {
   },
   allowEIO3: true,
 });
+
 require('./utils/socket')(io);
+require('./utils/cron')(io);
