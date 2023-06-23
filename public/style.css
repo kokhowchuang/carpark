@@ -1,3 +1,24 @@
+.content {
+  padding: 0 10px;
+}
+
 #container {
-  width: 300px;
+  width: 350px;
+}
+
+#container > .size {
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+#container > .wrapper {
+  padding-bottom: 20px;
+}
+
+#container > .separator {
+  height: 2px;
+  width: 100%;
+  border-top: 2px dashed #565656;
+  margin-bottom: 15px;
 }

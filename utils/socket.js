@@ -2,7 +2,7 @@
 function socket(io) {
   io.on('connection', (socket) => {
     socket.on('subcribe', () => {
-      // Send carpark statistical data
+      // Send connection status
       io.emit('subcribed');
     });
   });
