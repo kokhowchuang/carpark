@@ -19,7 +19,7 @@ npm run start
 2. Using the docker.
 
 ```bash
-docker compose dev
+docker compose up dev
 ```
 
 ## Result
